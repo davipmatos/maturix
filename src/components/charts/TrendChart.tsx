@@ -8,8 +8,10 @@ import {
   YAxis,
 } from "recharts";
 import { MOCK_TREND } from "@/data/mockData";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function TrendChart() {
+  const { t } = useTranslation();
   return (
     <ResponsiveContainer width="100%" height={260}>
       <AreaChart data={MOCK_TREND} margin={{ top: 10, right: 12, left: -16, bottom: 0 }}>
@@ -50,7 +52,7 @@ export function TrendChart() {
           stroke="#5a8aff"
           strokeWidth={2.5}
           fill="url(#trendFill)"
-          name="Overall maturity"
+          name={t("dashboard.kpi.overall")}
         />
         <Area
           type="monotone"
@@ -58,7 +60,7 @@ export function TrendChart() {
           stroke="#8b5cf6"
           strokeWidth={1.5}
           fill="transparent"
-          name="Govern"
+          name={t("nist.GV.name")}
         />
         <Area
           type="monotone"
@@ -66,7 +68,7 @@ export function TrendChart() {
           stroke="#10b981"
           strokeWidth={1.5}
           fill="transparent"
-          name="Protect"
+          name={t("nist.PR.name")}
         />
         <Area
           type="monotone"
@@ -74,7 +76,7 @@ export function TrendChart() {
           stroke="#f59e0b"
           strokeWidth={1.5}
           fill="transparent"
-          name="Detect"
+          name={t("nist.DE.name")}
         />
       </AreaChart>
     </ResponsiveContainer>

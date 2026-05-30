@@ -17,6 +17,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { MOCK_RECOMMENDATIONS, Recommendation } from "@/data/mockData";
 import { formatDate, priorityColor } from "@/lib/utils";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const PRIORITY_ORDER: Recommendation["priority"][] = [
   "critical",
@@ -26,6 +27,7 @@ const PRIORITY_ORDER: Recommendation["priority"][] = [
 ];
 
 export function RecommendationsPage() {
+  const { t } = useTranslation();
   const [priority, setPriority] = useState<Recommendation["priority"] | "all">(
     "all",
   );
@@ -61,29 +63,50 @@ export function RecommendationsPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-ink-400">
-            <Sparkles className="h-3.5 w-3.5 text-brand-300" /> AI insights
+            <Sparkles className="h-3.5 w-3.5 text-brand-300" />{" "}
+            {t("topbar.aiInsights")}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-            Prioritized recommendations
+            {t("recs.title")}
           </h1>
-          <p className="text-sm text-ink-400">
-            Ranked by risk reduction and maturity uplift versus effort.
-          </p>
+          <p className="text-sm text-ink-400">{t("recs.subtitle")}</p>
         </div>
       </div>
 
-      {/* Stat strip */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label="Open recommendations" value={String(totals.count)} hint="Across all functions" icon={CheckCircle2} />
-        <Stat label="Critical" value={String(totals.critical)} hint="Highest blast radius" icon={Flame} tone="rose" />
-        <Stat label="Total maturity uplift" value={`+${totals.uplift}`} hint="If all completed" icon={TrendingUp} tone="emerald" />
-        <Stat label="Aggregate risk reduction" value={`-${totals.risk}%`} hint="Top-down estimate" icon={Flame} tone="amber" />
+        <Stat
+          label={t("recs.stat.open")}
+          value={String(totals.count)}
+          hint={t("recs.stat.open.hint")}
+          icon={CheckCircle2}
+        />
+        <Stat
+          label={t("recs.stat.critical")}
+          value={String(totals.critical)}
+          hint={t("recs.stat.critical.hint")}
+          icon={Flame}
+          tone="rose"
+        />
+        <Stat
+          label={t("recs.stat.uplift")}
+          value={`+${totals.uplift}`}
+          hint={t("recs.stat.uplift.hint")}
+          icon={TrendingUp}
+          tone="emerald"
+        />
+        <Stat
+          label={t("recs.stat.risk")}
+          value={`-${totals.risk}%`}
+          hint={t("recs.stat.risk.hint")}
+          icon={Flame}
+          tone="amber"
+        />
       </div>
 
-      {/* Filter chips */}
       <div className="flex flex-wrap items-center gap-2">
         {(["all", "critical", "high", "medium", "low"] as const).map((p) => {
           const active = priority === p;
+          const labelKey = p === "all" ? "common.all" : `priority.${p}`;
           return (
             <button
               key={p}
@@ -94,7 +117,7 @@ export function RecommendationsPage() {
                   : "border-white/10 bg-white/5 text-ink-300 hover:bg-white/10"
               }`}
             >
-              {p}
+              {t(labelKey)}
             </button>
           );
         })}
@@ -102,9 +125,12 @@ export function RecommendationsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recommendations queue</CardTitle>
+          <CardTitle>{t("recs.queue")}</CardTitle>
           <CardSubtitle>
-            {filtered.length} prioritized item{filtered.length === 1 ? "" : "s"}
+            {t("recs.queue.subtitle", {
+              n: filtered.length,
+              s: filtered.length === 1 ? "" : "s",
+            })}
           </CardSubtitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -123,7 +149,7 @@ export function RecommendationsPage() {
                         color: priorityColor(r.priority),
                       }}
                     >
-                      {r.priority}
+                      {t(`priority.${r.priority}`)}
                     </span>
                     <span className="font-mono text-[10px] text-ink-500">
                       {r.subcategoryId}
@@ -137,13 +163,17 @@ export function RecommendationsPage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <Mini label="Uplift" value={`+${r.uplift}`} accent="emerald" />
                   <Mini
-                    label="Risk"
+                    label={t("recs.uplift")}
+                    value={`+${r.uplift}`}
+                    accent="emerald"
+                  />
+                  <Mini
+                    label={t("recs.risk")}
                     value={`-${r.riskReduction}%`}
                     accent="rose"
                   />
-                  <Mini label="Effort" value={r.effort} accent="brand" />
+                  <Mini label={t("recs.effort")} value={r.effort} accent="brand" />
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-ink-400">
@@ -152,7 +182,8 @@ export function RecommendationsPage() {
                 </span>
                 <span>·</span>
                 <span className="inline-flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Due {formatDate(r.dueBy)}
+                  <Clock className="h-3 w-3" /> {t("common.due")}{" "}
+                  {formatDate(r.dueBy)}
                 </span>
                 <Badge tone="neutral" className="ml-auto">
                   {r.function} · {r.category}

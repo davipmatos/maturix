@@ -329,7 +329,7 @@ export interface ActivityEvent {
   id: string;
   at: string;
   actor: string;
-  action: string;
+  actionKey: string;
   target: string;
   delta?: string;
 }
@@ -339,7 +339,7 @@ export const MOCK_ACTIVITY: ActivityEvent[] = [
     id: "act_1",
     at: "2026-05-29T14:42:00Z",
     actor: "Neto Loureiro",
-    action: "Updated maturity score",
+    actionKey: "activity.update",
     target: "PR.AA-03 — Users, services, hardware authenticated",
     delta: "3 → 4",
   },
@@ -347,35 +347,35 @@ export const MOCK_ACTIVITY: ActivityEvent[] = [
     id: "act_2",
     at: "2026-05-28T18:11:00Z",
     actor: "Carla Mendes",
-    action: "Attached evidence",
+    actionKey: "activity.attach",
     target: "PR.DS-11 — Backups maintained, protected and tested",
   },
   {
     id: "act_3",
     at: "2026-05-27T09:30:00Z",
     actor: "System",
-    action: "Generated quarterly executive report",
+    actionKey: "activity.generate",
     target: "Q2 2026 Executive Brief",
   },
   {
     id: "act_4",
     at: "2026-05-26T15:02:00Z",
     actor: "Pedro Alcântara",
-    action: "Created recommendation",
+    actionKey: "activity.createRec",
     target: "Automate ANPD breach notification workflow",
   },
   {
     id: "act_5",
     at: "2026-05-26T11:48:00Z",
     actor: "Neto Loureiro",
-    action: "Approved gap remediation plan",
+    actionKey: "activity.approve",
     target: "GV.SC-03 — Supplier cybersecurity contract clauses",
   },
   {
     id: "act_6",
     at: "2026-05-25T16:23:00Z",
     actor: "System",
-    action: "Detected reviewed-evidence drift",
+    actionKey: "activity.drift",
     target: "GV.PO-02 — Policy last reviewed > 180 days",
   },
 ];
@@ -388,7 +388,12 @@ export interface KPI {
   hint: string;
 }
 
-export function buildKPIs(): KPI[] {
+type Translator = (
+  key: string,
+  vars?: Record<string, string | number>,
+) => string;
+
+export function buildKPIs(t: Translator): KPI[] {
   const all = getAllSubcategories();
   const score = overallMaturity();
   const target = overallTarget();
@@ -400,32 +405,32 @@ export function buildKPIs(): KPI[] {
   const lowScore = all.filter((s) => s.currentScore <= 1).length;
   return [
     {
-      label: "Overall maturity",
+      label: t("dashboard.kpi.overall"),
       value: score.toFixed(2),
-      delta: "+0.18 vs Q1",
+      delta: t("dashboard.delta.q1"),
       trend: "up",
-      hint: `Across ${all.length} CSF 2.0 outcomes`,
+      hint: t("dashboard.kpi.overall.hint", { n: all.length }),
     },
     {
-      label: "Maturity gap vs target",
+      label: t("dashboard.kpi.gap"),
       value: gap.toFixed(2),
-      delta: "-0.21 vs Q1",
+      delta: t("dashboard.delta.gap.q1"),
       trend: "down",
-      hint: `Target ${target.toFixed(2)}`,
+      hint: t("dashboard.kpi.gap.hint", { n: target.toFixed(2) }),
     },
     {
-      label: "Critical + high gaps",
+      label: t("dashboard.kpi.criticalHigh"),
       value: String(critical + high),
-      delta: `${critical} critical`,
+      delta: t("dashboard.kpi.criticalHigh.delta", { n: critical }),
       trend: critical > 0 ? "up" : "flat",
-      hint: "Open prioritized recommendations",
+      hint: t("dashboard.kpi.criticalHigh.hint"),
     },
     {
-      label: "Outcomes at Tier 1",
+      label: t("dashboard.kpi.tier1"),
       value: String(lowScore),
-      delta: "-3 vs Q1",
+      delta: t("dashboard.delta.tier1.q1"),
       trend: "down",
-      hint: "Initial / ad-hoc practices",
+      hint: t("dashboard.kpi.tier1.hint"),
     },
   ];
 }
@@ -433,6 +438,8 @@ export function buildKPIs(): KPI[] {
 export const FUNCTION_BREAKDOWN = NIST_FRAMEWORK.map((fn) => ({
   id: fn.id,
   name: fn.name,
+  nameKey: `nist.${fn.id}.name`,
+  descriptionKey: `nist.${fn.id}.description`,
   color: fn.color,
   current: averageFunctionScore(fn),
   target: averageFunctionTarget(fn),

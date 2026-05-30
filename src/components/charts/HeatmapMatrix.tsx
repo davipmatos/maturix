@@ -1,7 +1,9 @@
 import { NIST_FRAMEWORK, averageCategoryScore } from "@/data/nistFramework";
 import { scoreColor, scoreLabel } from "@/lib/utils";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function HeatmapMatrix() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
       {NIST_FRAMEWORK.map((fn) => (
@@ -13,12 +15,17 @@ export function HeatmapMatrix() {
                 style={{ backgroundColor: fn.color }}
               />
               <span className="text-xs font-semibold text-ink-100">
-                {fn.name}
+                {t(`nist.${fn.id}.name`)}
               </span>
             </div>
             <div className="mt-0.5 text-[10px] text-ink-500">{fn.id}</div>
           </div>
-          <div className="grid flex-1 gap-1.5" style={{ gridTemplateColumns: `repeat(${fn.categories.length}, minmax(0, 1fr))` }}>
+          <div
+            className="grid flex-1 gap-1.5"
+            style={{
+              gridTemplateColumns: `repeat(${fn.categories.length}, minmax(0, 1fr))`,
+            }}
+          >
             {fn.categories.map((c) => {
               const score = averageCategoryScore(c);
               return (
@@ -47,7 +54,7 @@ export function HeatmapMatrix() {
         </div>
       ))}
       <div className="mt-3 flex items-center justify-end gap-3 pt-2 text-[10px] text-ink-400">
-        <span>Maturity:</span>
+        <span>{t("dashboard.legend.maturity")}</span>
         {[1, 2, 3, 4, 5].map((l) => (
           <span key={l} className="flex items-center gap-1">
             <span

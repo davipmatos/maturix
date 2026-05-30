@@ -11,17 +11,19 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MOCK_ORG } from "@/data/mockData";
-
-const NAV = [
-  { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/app/assessments", label: "Assessments", icon: ClipboardCheck },
-  { to: "/app/framework", label: "Framework", icon: Layers },
-  { to: "/app/recommendations", label: "Recommendations", icon: Sparkles },
-  { to: "/app/reports", label: "Reports", icon: FileBarChart2 },
-  { to: "/app/settings", label: "Settings", icon: Settings },
-];
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function Sidebar() {
+  const { t } = useTranslation();
+  const NAV = [
+    { to: "/app", label: t("nav.dashboard"), icon: LayoutDashboard, end: true },
+    { to: "/app/assessments", label: t("nav.assessments"), icon: ClipboardCheck },
+    { to: "/app/framework", label: t("nav.framework"), icon: Layers },
+    { to: "/app/recommendations", label: t("nav.recommendations"), icon: Sparkles },
+    { to: "/app/reports", label: t("nav.reports"), icon: FileBarChart2 },
+    { to: "/app/settings", label: t("nav.settings"), icon: Settings },
+  ];
+
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-white/5 bg-ink-950/80 px-3 py-5">
       <div className="flex items-center gap-2.5 px-2 pb-6">
@@ -33,7 +35,7 @@ export function Sidebar() {
             Maturix
           </div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-ink-400">
-            NIST CSF 2.0
+            {t("nav.subtitle")}
           </div>
         </div>
       </div>
@@ -69,7 +71,7 @@ export function Sidebar() {
               {MOCK_ORG.name}
             </div>
             <div className="truncate text-[10px] text-ink-400">
-              {MOCK_ORG.industry}
+              {t("org.industry")}
             </div>
           </div>
         </div>

@@ -8,10 +8,12 @@ import {
   Tooltip,
 } from "recharts";
 import { FUNCTION_BREAKDOWN } from "@/data/mockData";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function RadarScore() {
+  const { t } = useTranslation();
   const data = FUNCTION_BREAKDOWN.map((fn) => ({
-    function: fn.name,
+    function: t(fn.nameKey),
     current: fn.current,
     target: fn.target,
     fullMark: 5,

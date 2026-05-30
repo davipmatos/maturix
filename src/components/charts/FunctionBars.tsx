@@ -9,12 +9,18 @@ import {
   YAxis,
 } from "recharts";
 import { FUNCTION_BREAKDOWN } from "@/data/mockData";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function FunctionBars() {
+  const { t } = useTranslation();
+  const data = FUNCTION_BREAKDOWN.map((fn) => ({
+    ...fn,
+    name: t(fn.nameKey),
+  }));
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart
-        data={FUNCTION_BREAKDOWN}
+        data={data}
         margin={{ top: 8, right: 12, left: -10, bottom: 0 }}
         barCategoryGap={22}
       >
@@ -43,7 +49,7 @@ export function FunctionBars() {
           }}
           formatter={(v: number) => v.toFixed(2)}
         />
-        <Bar dataKey="current" radius={[6, 6, 2, 2]} name="Current">
+        <Bar dataKey="current" radius={[6, 6, 2, 2]} name={t("common.current")}>
           {FUNCTION_BREAKDOWN.map((fn) => (
             <Cell key={fn.id} fill={fn.color} fillOpacity={0.85} />
           ))}
@@ -51,7 +57,7 @@ export function FunctionBars() {
         <Bar
           dataKey="target"
           radius={[6, 6, 2, 2]}
-          name="Target"
+          name={t("common.targetWord")}
           fill="rgba(255,255,255,0.12)"
         />
       </BarChart>

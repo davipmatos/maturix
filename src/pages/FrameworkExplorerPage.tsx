@@ -17,8 +17,10 @@ import {
 } from "@/data/nistFramework";
 import { MaturityChip } from "@/components/ui/MaturityChip";
 import { ScoreBar } from "@/components/ui/Progress";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function FrameworkExplorerPage() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [openCategory, setOpenCategory] = useState<string | null>("GV.OC");
 
@@ -51,21 +53,18 @@ export function FrameworkExplorerPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-ink-400">
-            <Layers className="h-3.5 w-3.5" /> Framework Explorer
+            <Layers className="h-3.5 w-3.5" /> {t("nav.framework")}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-            NIST Cybersecurity Framework 2.0
+            {t("framework.title")}
           </h1>
-          <p className="text-sm text-ink-400">
-            6 Functions · 22 Categories · 100+ outcomes. Browse the framework
-            and inspect your scoring side-by-side.
-          </p>
+          <p className="text-sm text-ink-400">{t("framework.subtitle")}</p>
         </div>
         <div className="w-full max-w-sm">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-500" />
             <Input
-              placeholder="Search outcome ID, title or description…"
+              placeholder={t("framework.searchPlaceholder")}
               className="pl-10"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -89,7 +88,9 @@ export function FrameworkExplorerPage() {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: fn.color }}
                 />
-                <span className="text-sm font-bold text-white">{fn.name}</span>
+                <span className="text-sm font-bold text-white">
+                  {t(`nist.${fn.id}.name`)}
+                </span>
                 <span className="ml-auto font-mono text-[10px] text-ink-500">
                   {fn.id}
                 </span>
@@ -98,7 +99,7 @@ export function FrameworkExplorerPage() {
                 {averageFunctionScore(fn).toFixed(2)}
               </div>
               <div className="text-[11px] text-ink-400">
-                target {averageFunctionTarget(fn).toFixed(2)}
+                {t("common.target")} {averageFunctionTarget(fn).toFixed(2)}
               </div>
               <div className="mt-3">
                 <ScoreBar
@@ -124,7 +125,7 @@ export function FrameworkExplorerPage() {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ backgroundColor: fn.color }}
                 />
-                {fn.name}
+                {t(`nist.${fn.id}.name`)}
                 <span className="font-mono text-[10px] text-ink-500">
                   {fn.id}
                 </span>
@@ -132,7 +133,9 @@ export function FrameworkExplorerPage() {
                   {averageFunctionScore(fn).toFixed(2)}
                 </Badge>
               </CardTitle>
-              <CardSubtitle className="max-w-3xl">{fn.description}</CardSubtitle>
+              <CardSubtitle className="max-w-3xl">
+                {t(`nist.${fn.id}.description`)}
+              </CardSubtitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {fn.categories.map((c) => {
@@ -198,7 +201,9 @@ export function FrameworkExplorerPage() {
                             <div className="col-span-6 lg:col-span-3 flex flex-col justify-center">
                               <div className="flex items-center justify-between text-[10px] text-ink-400">
                                 <span>{s.currentScore}</span>
-                                <span>target {s.targetScore}</span>
+                                <span>
+                                  {t("common.target")} {s.targetScore}
+                                </span>
                               </div>
                               <ScoreBar
                                 current={s.currentScore}

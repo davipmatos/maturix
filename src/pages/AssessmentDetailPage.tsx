@@ -28,9 +28,11 @@ import {
   averageFunctionTarget,
 } from "@/data/nistFramework";
 import { formatDate, scoreColor } from "@/lib/utils";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function AssessmentDetailPage() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const assessment =
     MOCK_ASSESSMENTS.find((a) => a.id === id) ?? MOCK_ASSESSMENTS[0];
 
@@ -40,27 +42,29 @@ export function AssessmentDetailPage() {
     [activeFn],
   );
 
+  const statusKey =
+    assessment.status === "in_progress"
+      ? "status.inProgress"
+      : assessment.status === "draft"
+        ? "status.draft"
+        : "status.completed";
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <Link
             to="/app/assessments"
             className="inline-flex items-center gap-1.5 text-xs text-ink-400 hover:text-ink-200"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> All assessments
+            <ArrowLeft className="h-3.5 w-3.5" /> {t("assessment.back")}
           </Link>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
             {assessment.name}
           </h1>
           <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-ink-400">
             <Badge tone={assessment.status === "completed" ? "success" : "info"}>
-              {assessment.status === "in_progress"
-                ? "In progress"
-                : assessment.status === "draft"
-                  ? "Draft"
-                  : "Completed"}
+              {t(statusKey)}
             </Badge>
             <span className="inline-flex items-center gap-1">
               <User className="h-3 w-3" /> {assessment.leadAssessor}
@@ -76,25 +80,24 @@ export function AssessmentDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4" /> Export PDF
+            <Download className="h-4 w-4" /> {t("common.exportPdf")}
           </Button>
           <Button>
-            <PenSquare className="h-4 w-4" /> Continue scoring
+            <PenSquare className="h-4 w-4" /> {t("common.continue")}
           </Button>
         </div>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="pt-5">
-            <div className="text-xs text-ink-400">Overall maturity</div>
+            <div className="text-xs text-ink-400">{t("assessment.overall")}</div>
             <div className="mt-1 flex items-end gap-3">
               <div className="text-3xl font-bold tracking-tight text-white">
                 {assessment.overallScore.toFixed(2)}
               </div>
               <div className="pb-1 text-xs text-ink-400">
-                target {assessment.overallTarget.toFixed(2)}
+                {t("common.target")} {assessment.overallTarget.toFixed(2)}
               </div>
             </div>
             <div className="mt-3">
@@ -107,29 +110,37 @@ export function AssessmentDetailPage() {
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <div className="text-xs text-ink-400">Outcomes scored</div>
+            <div className="text-xs text-ink-400">
+              {t("assessment.outcomesScored")}
+            </div>
             <div className="mt-1 text-3xl font-bold tracking-tight text-white">
-              {NIST_FRAMEWORK.flatMap((f) => f.categories).flatMap((c) => c.subcategories).length}
+              {
+                NIST_FRAMEWORK.flatMap((f) => f.categories).flatMap(
+                  (c) => c.subcategories,
+                ).length
+              }
             </div>
             <div className="text-[11px] text-ink-500">
-              Across {NIST_FRAMEWORK.length} functions · {NIST_FRAMEWORK.flatMap((f) => f.categories).length} categories
+              {t("assessment.outcomesScored.hint", {
+                fn: NIST_FRAMEWORK.length,
+                cat: NIST_FRAMEWORK.flatMap((f) => f.categories).length,
+              })}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <div className="text-xs text-ink-400">Evidence attached</div>
+            <div className="text-xs text-ink-400">{t("assessment.evidence")}</div>
             <div className="mt-1 text-3xl font-bold tracking-tight text-white">
               42
             </div>
             <div className="text-[11px] text-ink-500">
-              Documents, screenshots, policies and tickets
+              {t("assessment.evidence.hint")}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Function tabs */}
       <div className="flex flex-wrap gap-2">
         {NIST_FRAMEWORK.map((f) => {
           const active = f.id === activeFn;
@@ -149,10 +160,11 @@ export function AssessmentDetailPage() {
               />
               <div className="leading-tight">
                 <div className="text-xs font-semibold text-ink-100">
-                  {f.name}
+                  {t(`nist.${f.id}.name`)}
                 </div>
                 <div className="text-[10px] text-ink-500">
-                  {averageFunctionScore(f).toFixed(2)} → {averageFunctionTarget(f).toFixed(2)}
+                  {averageFunctionScore(f).toFixed(2)} →{" "}
+                  {averageFunctionTarget(f).toFixed(2)}
                 </div>
               </div>
             </button>
@@ -160,7 +172,6 @@ export function AssessmentDetailPage() {
         })}
       </div>
 
-      {/* Function content */}
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div>
@@ -169,13 +180,15 @@ export function AssessmentDetailPage() {
                 className="h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: fn.color }}
               />
-              {fn.name}
+              {t(`nist.${fn.id}.name`)}
               <span className="font-mono text-[10px] text-ink-500">{fn.id}</span>
             </CardTitle>
-            <CardSubtitle className="max-w-2xl">{fn.description}</CardSubtitle>
+            <CardSubtitle className="max-w-2xl">
+              {t(`nist.${fn.id}.description`)}
+            </CardSubtitle>
           </div>
           <button className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-[11px] text-ink-300 hover:bg-white/10">
-            <Filter className="h-3 w-3" /> Filter
+            <Filter className="h-3 w-3" /> {t("common.filter")}
           </button>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -206,7 +219,7 @@ export function AssessmentDetailPage() {
                     </Badge>
                     <div
                       className="h-2 w-24 rounded-full bg-white/5"
-                      title={`Category average ${catScore.toFixed(2)}`}
+                      title={`avg ${catScore.toFixed(2)}`}
                     >
                       <div
                         className="h-full rounded-full"
@@ -242,12 +255,17 @@ export function AssessmentDetailPage() {
 
                       <div className="mt-3">
                         <div className="mb-1 flex items-center justify-between text-[10px] text-ink-400">
-                          <span>Current → Target</span>
+                          <span>
+                            {t("common.current")} → {t("common.targetWord")}
+                          </span>
                           <span className="font-mono">
                             {s.currentScore} / {s.targetScore}
                           </span>
                         </div>
-                        <ScoreBar current={s.currentScore} target={s.targetScore} />
+                        <ScoreBar
+                          current={s.currentScore}
+                          target={s.targetScore}
+                        />
                       </div>
 
                       <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
@@ -257,23 +275,25 @@ export function AssessmentDetailPage() {
                         </span>
                         <span className="text-ink-500">·</span>
                         <span className="text-ink-400">
-                          Reviewed {formatDate(s.lastReviewed)}
+                          {t("common.reviewed")} {formatDate(s.lastReviewed)}
                         </span>
                         {s.evidence.length > 0 && (
                           <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-ink-300">
                             <FileText className="h-3 w-3" />
-                            {s.evidence.length} evidence
+                            {s.evidence.length} {t("common.evidence")}
                           </span>
                         )}
                         {s.evidence.length === 0 && (
                           <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-300">
-                            No evidence
+                            {t("common.noEvidence")}
                           </span>
                         )}
                       </div>
                       {s.notes && (
                         <div className="mt-3 rounded-lg border border-amber-400/20 bg-amber-500/5 px-2.5 py-1.5 text-[11px] text-amber-200">
-                          <span className="font-semibold">Note · </span>
+                          <span className="font-semibold">
+                            {t("common.note")} ·{" "}
+                          </span>
                           {s.notes}
                         </div>
                       )}
@@ -286,11 +306,10 @@ export function AssessmentDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Function summary footer */}
       <Card>
         <CardHeader>
-          <CardTitle>Function summary</CardTitle>
-          <CardSubtitle>Where to focus next</CardSubtitle>
+          <CardTitle>{t("assessment.summary")}</CardTitle>
+          <CardSubtitle>{t("assessment.summary.subtitle")}</CardSubtitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -304,16 +323,16 @@ export function AssessmentDetailPage() {
                     className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: f.color }}
                   />
-                  {f.name}
+                  {t(f.nameKey)}
                 </div>
                 <div className="mt-2 flex items-center justify-between text-[11px] text-ink-400">
-                  <span>Current</span>
+                  <span>{t("common.current")}</span>
                   <span className="font-mono text-ink-100">
                     {f.current.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-ink-400">
-                  <span>Target</span>
+                  <span>{t("common.targetWord")}</span>
                   <span className="font-mono text-ink-100">
                     {f.target.toFixed(2)}
                   </span>
@@ -324,7 +343,7 @@ export function AssessmentDetailPage() {
                 <div className="mt-2 inline-flex items-center gap-1.5 text-[11px]">
                   <CheckCircle2 className="h-3 w-3 text-emerald-400" />
                   <span className="text-emerald-300">
-                    {f.subcategories} outcomes scored
+                    {f.subcategories} {t("assessment.outcomesScored").toLowerCase()}
                   </span>
                 </div>
               </div>

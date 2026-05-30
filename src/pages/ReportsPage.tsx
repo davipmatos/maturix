@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const REPORTS = [
   {
@@ -88,24 +89,22 @@ const REPORTS = [
 ];
 
 export function ReportsPage() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-ink-400">
-            <FileBarChart2 className="h-3.5 w-3.5" /> Reports
+            <FileBarChart2 className="h-3.5 w-3.5" /> {t("nav.reports")}
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-            Board-ready reporting
+            {t("reports.title")}
           </h1>
-          <p className="text-sm text-ink-400">
-            One-click generation of executive briefs, full assessment books and
-            regulator-facing snapshots.
-          </p>
+          <p className="text-sm text-ink-400">{t("reports.subtitle")}</p>
         </div>
         <Button>
           <Sparkles className="h-4 w-4" />
-          Generate from this assessment
+          {t("reports.generate")}
         </Button>
       </div>
 
@@ -121,40 +120,32 @@ export function ReportsPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-2xl">
               <Badge tone="brand">
-                <Sparkles className="h-3 w-3" /> Q2 2026 Executive Brief
+                <Sparkles className="h-3 w-3" /> {t("reports.featured.badge")}
               </Badge>
               <h3 className="mt-3 text-xl font-bold tracking-tight text-white">
-                Quarterly cybersecurity maturity brief
+                {t("reports.featured.title")}
               </h3>
               <p className="mt-1 text-sm text-ink-300">
-                Auto-generated narrative covering posture vs target, the 4
-                critical gaps closed since Q1 and the proposed 90-day roadmap.
-                Approve to share with the board.
+                {t("reports.featured.body")}
               </p>
               <ul className="mt-4 space-y-1.5 text-sm">
-                <ListItem>
-                  Overall maturity grew from 2.42 to 2.60 (+7.4%) quarter-over-quarter.
-                </ListItem>
-                <ListItem>
-                  Govern lift driven by ERM integration and policy refresh.
-                </ListItem>
-                <ListItem>
-                  Critical gap remains in supplier contractual clauses (GV.SC-03).
-                </ListItem>
+                <ListItem>{t("reports.featured.line1")}</ListItem>
+                <ListItem>{t("reports.featured.line2")}</ListItem>
+                <ListItem>{t("reports.featured.line3")}</ListItem>
               </ul>
             </div>
             <div className="flex flex-col gap-2">
               <Button>
                 <Download className="h-4 w-4" />
-                Download PDF
+                {t("common.exportPdf")}
               </Button>
               <Button variant="outline">
                 <Mail className="h-4 w-4" />
-                Email to ExCo
+                {t("common.email")}
               </Button>
               <Button variant="ghost">
                 <Share2 className="h-4 w-4" />
-                Share link
+                {t("common.share")}
               </Button>
             </div>
           </div>
@@ -172,16 +163,19 @@ export function ReportsPage() {
             <CardContent>
               <div className="flex items-center justify-between text-[11px] text-ink-400">
                 <span className="inline-flex items-center gap-1">
-                  <FileText className="h-3 w-3" /> {r.pages} pages · {r.format}
+                  <FileText className="h-3 w-3" /> {r.pages}{" "}
+                  {t("reports.pages")} · {r.format}
                 </span>
-                <span>Updated {r.lastUpdated}</span>
+                <span>
+                  {t("reports.updated")} {r.lastUpdated}
+                </span>
               </div>
               <div className="mt-3 flex items-center gap-2">
                 <Button variant="outline" size="sm" className="flex-1">
-                  <Download className="h-3.5 w-3.5" /> Download
+                  <Download className="h-3.5 w-3.5" /> {t("common.download")}
                 </Button>
                 <Button variant="ghost" size="sm">
-                  Preview <ArrowRight className="h-3.5 w-3.5" />
+                  {t("common.preview")} <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </CardContent>

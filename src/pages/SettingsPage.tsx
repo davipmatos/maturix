@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { MOCK_ORG } from "@/data/mockData";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const MEMBERS = [
   { name: "Neto Loureiro", role: "Director of Cyber", email: "neto.loureiro@orion.com.br", access: "Owner" },
@@ -27,19 +28,17 @@ const MEMBERS = [
 ];
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-6">
       <div>
         <div className="flex items-center gap-2 text-xs text-ink-400">
-          <Building2 className="h-3.5 w-3.5" /> Settings
+          <Building2 className="h-3.5 w-3.5" /> {t("nav.settings")}
         </div>
         <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-          Organization settings
+          {t("settings.title")}
         </h1>
-        <p className="text-sm text-ink-400">
-          Configure organization profile, members, MFA policy and notification
-          preferences.
-        </p>
+        <p className="text-sm text-ink-400">{t("settings.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -47,29 +46,36 @@ export function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-brand-300" />
-              Organization profile
+              {t("settings.profile")}
             </CardTitle>
-            <CardSubtitle>
-              Used in assessments, reports and executive briefs.
-            </CardSubtitle>
+            <CardSubtitle>{t("settings.profile.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Field label="Organization name" defaultValue={MOCK_ORG.name} />
-              <Field label="Industry" defaultValue={MOCK_ORG.industry} />
-              <Field label="Size band" defaultValue={MOCK_ORG.sizeBand} />
-              <Field label="Headquarters" defaultValue={MOCK_ORG.headquarters} />
+              <Field label={t("settings.field.orgName")} defaultValue={MOCK_ORG.name} />
               <Field
-                label="Primary regulations"
+                label={t("settings.field.industry")}
+                defaultValue={t("org.industry")}
+              />
+              <Field
+                label={t("settings.field.size")}
+                defaultValue={t("org.size")}
+              />
+              <Field
+                label={t("settings.field.hq")}
+                defaultValue={MOCK_ORG.headquarters}
+              />
+              <Field
+                label={t("settings.field.regs")}
                 defaultValue={MOCK_ORG.primaryRegulations.join(", ")}
               />
               <Field
-                label="Risk appetite"
-                defaultValue={MOCK_ORG.riskAppetite}
+                label={t("settings.field.appetite")}
+                defaultValue={t("org.appetite.low")}
               />
             </div>
             <div className="mt-4 flex justify-end">
-              <Button>Save changes</Button>
+              <Button>{t("common.save")}</Button>
             </div>
           </CardContent>
         </Card>
@@ -78,33 +84,33 @@ export function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-4 w-4 text-emerald-400" />
-              Security
+              {t("settings.security")}
             </CardTitle>
-            <CardSubtitle>Authentication and session policy.</CardSubtitle>
+            <CardSubtitle>{t("settings.security.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <ToggleRow
               icon={KeyRound}
-              title="Require MFA for all members"
-              description="TOTP authenticator app required on every sign-in."
+              title={t("settings.security.mfa.title")}
+              description={t("settings.security.mfa.desc")}
               defaultChecked
             />
             <ToggleRow
               icon={Mail}
-              title="Block third-party email domains"
-              description="Members must use an @orion.com.br address."
+              title={t("settings.security.domain.title")}
+              description={t("settings.security.domain.desc")}
               defaultChecked
             />
             <ToggleRow
               icon={Bell}
-              title="Notify on score drift"
-              description="Email + in-app notification when an outcome regresses."
+              title={t("settings.security.drift.title")}
+              description={t("settings.security.drift.desc")}
               defaultChecked
             />
             <ToggleRow
               icon={Shield}
-              title="Allow external assessors"
-              description="Guest accounts limited to read-only access on one cycle."
+              title={t("settings.security.guests.title")}
+              description={t("settings.security.guests.desc")}
               defaultChecked={false}
             />
           </CardContent>
@@ -116,14 +122,14 @@ export function SettingsPage() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-4 w-4 text-brand-300" />
-              Members
+              {t("settings.members")}
             </CardTitle>
             <CardSubtitle>
-              {MEMBERS.length} members with access to the workspace.
+              {t("settings.members.subtitle", { n: MEMBERS.length })}
             </CardSubtitle>
           </div>
           <Button variant="outline" size="sm">
-            Invite member
+            {t("common.invite")}
           </Button>
         </CardHeader>
         <CardContent className="px-0">
@@ -131,10 +137,18 @@ export function SettingsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-[10px] uppercase tracking-wider text-ink-500">
-                  <th className="px-5 py-3 text-left font-medium">Member</th>
-                  <th className="px-5 py-3 text-left font-medium">Role</th>
-                  <th className="px-5 py-3 text-left font-medium">Email</th>
-                  <th className="px-5 py-3 text-right font-medium">Access</th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("settings.members.col.member")}
+                  </th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("settings.members.col.role")}
+                  </th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("settings.members.col.email")}
+                  </th>
+                  <th className="px-5 py-3 text-right font-medium">
+                    {t("settings.members.col.access")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">

@@ -39,42 +39,42 @@ import {
   scoreLabel,
 } from "@/lib/utils";
 import { MaturityLevel, getAllSubcategories } from "@/data/nistFramework";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function DashboardPage() {
-  const kpis = buildKPIs();
+  const { t } = useTranslation();
+  const kpis = buildKPIs(t);
   const topRecs = MOCK_RECOMMENDATIONS.filter(
     (r) => r.priority === "critical" || r.priority === "high",
   ).slice(0, 4);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-ink-400">
             <Calendar className="h-3.5 w-3.5" />
-            <span>Q2 2026 · Assessment in progress</span>
+            <span>{t("dashboard.cycle")}</span>
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-            Cybersecurity maturity overview
+            {t("dashboard.title")}
           </h1>
           <p className="text-sm text-ink-400">
-            {MOCK_ORG.name} · NIST CSF 2.0 baseline against a tier-{Math.round(kpis[0] ? Number(kpis[0].value) + 1 : 4)} target
+            {MOCK_ORG.name} {t("dashboard.subtitle.suffix")}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="md">
-            <Download className="h-4 w-4" /> Export brief
+            <Download className="h-4 w-4" /> {t("common.exportBrief")}
           </Button>
           <Link to="/app/assessments">
             <Button variant="primary" size="md">
-              Open Q2 assessment <ArrowRight className="h-4 w-4" />
+              {t("dashboard.openQ2")} <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* KPI strip */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((k) => {
           const TrendIcon =
@@ -83,18 +83,16 @@ export function DashboardPage() {
               : k.trend === "down"
                 ? ArrowDownRight
                 : Minus;
+          const isGap = k.label === t("dashboard.kpi.gap");
+          const isTier1 = k.label === t("dashboard.kpi.tier1");
           const trendColor =
-            k.label === "Maturity gap vs target"
+            isGap || isTier1
               ? k.trend === "down"
                 ? "text-emerald-400"
                 : "text-rose-400"
-              : k.label === "Outcomes at Tier 1"
-                ? k.trend === "down"
-                  ? "text-emerald-400"
-                  : "text-rose-400"
-                : k.trend === "up"
-                  ? "text-emerald-400"
-                  : "text-rose-400";
+              : k.trend === "up"
+                ? "text-emerald-400"
+                : "text-rose-400";
           return (
             <Card key={k.label} className="overflow-hidden">
               <CardContent className="pt-5">
@@ -102,7 +100,9 @@ export function DashboardPage() {
                   <span className="text-xs font-medium text-ink-400">
                     {k.label}
                   </span>
-                  <span className={`inline-flex items-center gap-1 text-[11px] ${trendColor}`}>
+                  <span
+                    className={`inline-flex items-center gap-1 text-[11px] ${trendColor}`}
+                  >
                     <TrendIcon className="h-3 w-3" />
                     {k.delta}
                   </span>
@@ -119,19 +119,16 @@ export function DashboardPage() {
         })}
       </div>
 
-      {/* Charts row 1 */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between">
             <div>
-              <CardTitle>Maturity radar — Current vs Target</CardTitle>
-              <CardSubtitle>
-                NIST CSF 2.0 — averaged across all outcomes per function
-              </CardSubtitle>
+              <CardTitle>{t("dashboard.radar.title")}</CardTitle>
+              <CardSubtitle>{t("dashboard.radar.subtitle")}</CardSubtitle>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-ink-300">
-              <Legend swatch="#5a8aff" label="Current" />
-              <Legend swatch="#22c55e" label="Target" dashed />
+              <Legend swatch="#5a8aff" label={t("common.current")} />
+              <Legend swatch="#22c55e" label={t("common.targetWord")} dashed />
             </div>
           </CardHeader>
           <CardContent>
@@ -141,8 +138,8 @@ export function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Function breakdown</CardTitle>
-            <CardSubtitle>Average maturity per CSF Function</CardSubtitle>
+            <CardTitle>{t("dashboard.breakdown.title")}</CardTitle>
+            <CardSubtitle>{t("dashboard.breakdown.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -157,7 +154,7 @@ export function DashboardPage() {
                           style={{ backgroundColor: fn.color }}
                         />
                         <span className="text-sm font-medium text-ink-100">
-                          {fn.name}
+                          {t(fn.nameKey)}
                         </span>
                         <span className="text-[10px] font-mono text-ink-500">
                           {fn.id}
@@ -174,8 +171,10 @@ export function DashboardPage() {
                         <span className="font-mono tabular-nums text-ink-300">
                           {fn.target.toFixed(2)}
                         </span>
-                        <Badge tone={gap > 1 ? "danger" : gap > 0.5 ? "warning" : "success"}>
-                          gap {gap.toFixed(2)}
+                        <Badge
+                          tone={gap > 1 ? "danger" : gap > 0.5 ? "warning" : "success"}
+                        >
+                          {t("common.gap")} {gap.toFixed(2)}
                         </Badge>
                       </div>
                     </div>
@@ -188,19 +187,18 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* Charts row 2 */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader className="flex flex-row items-start justify-between">
             <div>
-              <CardTitle>Maturity trend</CardTitle>
-              <CardSubtitle>Five quarterly assessment cycles</CardSubtitle>
+              <CardTitle>{t("dashboard.trend.title")}</CardTitle>
+              <CardSubtitle>{t("dashboard.trend.subtitle")}</CardSubtitle>
             </div>
             <div className="flex items-center gap-3 text-[11px] text-ink-300">
-              <Legend swatch="#5a8aff" label="Overall" />
-              <Legend swatch="#8b5cf6" label="Govern" />
-              <Legend swatch="#10b981" label="Protect" />
-              <Legend swatch="#f59e0b" label="Detect" />
+              <Legend swatch="#5a8aff" label={t("dashboard.kpi.overall")} />
+              <Legend swatch="#8b5cf6" label={t("nist.GV.name")} />
+              <Legend swatch="#10b981" label={t("nist.PR.name")} />
+              <Legend swatch="#f59e0b" label={t("nist.DE.name")} />
             </div>
           </CardHeader>
           <CardContent>
@@ -210,8 +208,8 @@ export function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Functions — current vs target</CardTitle>
-            <CardSubtitle>Bar comparison per function</CardSubtitle>
+            <CardTitle>{t("dashboard.bars.title")}</CardTitle>
+            <CardSubtitle>{t("dashboard.bars.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent>
             <FunctionBars />
@@ -219,14 +217,11 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* Heatmap + AI insights */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader>
-            <CardTitle>Category heatmap</CardTitle>
-            <CardSubtitle>
-              22 NIST CSF 2.0 categories — color = average maturity
-            </CardSubtitle>
+            <CardTitle>{t("dashboard.heatmap.title")}</CardTitle>
+            <CardSubtitle>{t("dashboard.heatmap.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent>
             <HeatmapMatrix />
@@ -237,16 +232,16 @@ export function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-brand-300" /> Top
-                recommendations
+                <Sparkles className="h-3.5 w-3.5 text-brand-300" />{" "}
+                {t("dashboard.topRecs.title")}
               </CardTitle>
-              <CardSubtitle>Highest impact next steps</CardSubtitle>
+              <CardSubtitle>{t("dashboard.topRecs.subtitle")}</CardSubtitle>
             </div>
             <Link
               to="/app/recommendations"
               className="text-[11px] text-brand-300 hover:text-brand-200"
             >
-              View all
+              {t("common.viewAll")}
             </Link>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -271,15 +266,17 @@ export function DashboardPage() {
                       color: priorityColor(r.priority),
                     }}
                   >
-                    {r.priority}
+                    {t(`priority.${r.priority}`)}
                   </span>
                 </div>
                 <div className="mt-2 flex items-center gap-3 text-[11px] text-ink-400">
                   <span className="inline-flex items-center gap-1">
-                    <TrendingUp className="h-3 w-3" /> +{r.uplift} maturity
+                    <TrendingUp className="h-3 w-3" /> +{r.uplift}{" "}
+                    {t("recs.uplift").toLowerCase()}
                   </span>
                   <span className="inline-flex items-center gap-1">
-                    <Flame className="h-3 w-3 text-rose-400" /> -{r.riskReduction}% risk
+                    <Flame className="h-3 w-3 text-rose-400" /> -{r.riskReduction}%{" "}
+                    {t("recs.risk").toLowerCase()}
                   </span>
                   <span className="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 font-mono">
                     {r.effort}
@@ -291,12 +288,11 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      {/* Activity + Distribution */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader>
-            <CardTitle>Activity feed</CardTitle>
-            <CardSubtitle>Recent changes to the Q2 2026 assessment</CardSubtitle>
+            <CardTitle>{t("dashboard.activity.title")}</CardTitle>
+            <CardSubtitle>{t("dashboard.activity.subtitle")}</CardSubtitle>
           </CardHeader>
           <CardContent>
             <ul className="divide-y divide-white/5">
@@ -317,8 +313,12 @@ export function DashboardPage() {
                   <div className="min-w-0">
                     <div className="text-sm text-ink-100">
                       <span className="font-semibold">{a.actor}</span>{" "}
-                      <span className="text-ink-300">{a.action.toLowerCase()}</span>{" "}
-                      <span className="font-medium text-brand-200">{a.target}</span>
+                      <span className="text-ink-300">
+                        {t(a.actionKey).toLowerCase()}
+                      </span>{" "}
+                      <span className="font-medium text-brand-200">
+                        {a.target}
+                      </span>
                       {a.delta && (
                         <span className="ml-1.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
                           {a.delta}
@@ -337,8 +337,12 @@ export function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Outcomes by maturity tier</CardTitle>
-            <CardSubtitle>106 outcomes scored</CardSubtitle>
+            <CardTitle>{t("dashboard.distribution.title")}</CardTitle>
+            <CardSubtitle>
+              {t("dashboard.distribution.subtitle", {
+                n: getAllSubcategories().length,
+              })}
+            </CardSubtitle>
           </CardHeader>
           <CardContent>
             <DistributionByTier />
@@ -374,7 +378,7 @@ function Legend({
 }
 
 function DistributionByTier() {
-  // Build a histogram out of all subcategory scores.
+  const { t } = useTranslation();
   const counts: Record<MaturityLevel, number> = {
     0: 0,
     1: 0,
@@ -396,8 +400,7 @@ function DistributionByTier() {
             <div className="flex items-center justify-between text-xs">
               <MaturityChip level={lvl as MaturityLevel} />
               <span className="font-mono tabular-nums text-ink-200">
-                {c}{" "}
-                <span className="text-ink-500">({pct.toFixed(0)}%)</span>
+                {c} <span className="text-ink-500">({pct.toFixed(0)}%)</span>
               </span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/5">
@@ -409,7 +412,9 @@ function DistributionByTier() {
                 }}
               />
             </div>
-            <div className="text-[10px] text-ink-500">{scoreLabel(lvl)}</div>
+            <div className="text-[10px] text-ink-500">
+              {t(`maturity.${lvl}.label`)}
+            </div>
           </div>
         );
       })}

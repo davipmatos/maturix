@@ -21,26 +21,16 @@ import { Button } from "@/components/ui/Button";
 import { ScoreBar } from "@/components/ui/Progress";
 import { MOCK_ASSESSMENTS } from "@/data/mockData";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 const STATUS_META = {
-  completed: {
-    label: "Completed",
-    icon: CheckCircle2,
-    tone: "success" as const,
-  },
-  in_progress: {
-    label: "In progress",
-    icon: ClipboardEdit,
-    tone: "info" as const,
-  },
-  draft: {
-    label: "Draft",
-    icon: CircleDashed,
-    tone: "neutral" as const,
-  },
+  completed: { icon: CheckCircle2, tone: "success" as const, key: "status.completed" },
+  in_progress: { icon: ClipboardEdit, tone: "info" as const, key: "status.inProgress" },
+  draft: { icon: CircleDashed, tone: "neutral" as const, key: "status.draft" },
 };
 
 export function AssessmentsPage() {
+  const { t } = useTranslation();
   const completed = MOCK_ASSESSMENTS.filter((a) => a.status === "completed");
   const active = MOCK_ASSESSMENTS.filter((a) => a.status !== "completed");
 
@@ -50,26 +40,26 @@ export function AssessmentsPage() {
         <div>
           <div className="flex items-center gap-2 text-xs text-ink-400">
             <ClipboardList className="h-3.5 w-3.5" />
-            <span>Assessments</span>
+            <span>{t("nav.assessments")}</span>
           </div>
           <h1 className="mt-1 text-2xl font-bold tracking-tight text-white">
-            Maturity assessments
+            {t("assessments.title")}
           </h1>
-          <p className="text-sm text-ink-400">
-            Plan, run and finalize NIST CSF 2.0 assessment cycles across your organization.
-          </p>
+          <p className="text-sm text-ink-400">{t("assessments.subtitle")}</p>
         </div>
         <Button>
-          <Plus className="h-4 w-4" /> New assessment
+          <Plus className="h-4 w-4" /> {t("assessments.new")}
         </Button>
       </div>
 
-      {/* Active */}
       <Card>
         <CardHeader>
-          <CardTitle>Active</CardTitle>
+          <CardTitle>{t("assessments.active")}</CardTitle>
           <CardSubtitle>
-            {active.length} assessment{active.length === 1 ? "" : "s"} in progress or draft
+            {t("assessments.active.subtitle", {
+              n: active.length,
+              s: active.length === 1 ? "" : "s",
+            })}
           </CardSubtitle>
         </CardHeader>
         <CardContent>
@@ -86,7 +76,7 @@ export function AssessmentsPage() {
                     <div className="min-w-0">
                       <Badge tone={meta.tone}>
                         <meta.icon className="h-3 w-3" />
-                        {meta.label}
+                        {t(meta.key)}
                       </Badge>
                       <div className="mt-2 text-base font-semibold text-ink-50">
                         {a.name}
@@ -102,12 +92,12 @@ export function AssessmentsPage() {
                     </span>
                     <span className="inline-flex items-center gap-1">
                       <CalendarPlus className="h-3 w-3" />
-                      Started {formatDate(a.startedAt)}
+                      {t("assessments.started")} {formatDate(a.startedAt)}
                     </span>
                   </div>
                   <div className="mt-4">
                     <div className="mb-1 flex items-center justify-between text-[11px] text-ink-300">
-                      <span>Score vs target</span>
+                      <span>{t("assessments.scoreVsTarget")}</span>
                       <span className="font-mono">
                         {a.overallScore.toFixed(2)} / {a.overallTarget.toFixed(2)}
                       </span>
@@ -124,23 +114,34 @@ export function AssessmentsPage() {
         </CardContent>
       </Card>
 
-      {/* History */}
       <Card>
         <CardHeader>
-          <CardTitle>History</CardTitle>
-          <CardSubtitle>Completed assessment cycles</CardSubtitle>
+          <CardTitle>{t("assessments.history")}</CardTitle>
+          <CardSubtitle>{t("assessments.history.subtitle")}</CardSubtitle>
         </CardHeader>
         <CardContent className="px-0">
           <div className="overflow-hidden border-t border-white/5">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-[10px] uppercase tracking-wider text-ink-500">
-                  <th className="px-5 py-3 text-left font-medium">Cycle</th>
-                  <th className="px-5 py-3 text-left font-medium">Scope</th>
-                  <th className="px-5 py-3 text-left font-medium">Lead</th>
-                  <th className="px-5 py-3 text-left font-medium">Period</th>
-                  <th className="px-5 py-3 text-right font-medium">Score</th>
-                  <th className="px-5 py-3 text-right font-medium">Target</th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("assessments.col.cycle")}
+                  </th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("assessments.col.scope")}
+                  </th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("assessments.col.lead")}
+                  </th>
+                  <th className="px-5 py-3 text-left font-medium">
+                    {t("assessments.col.period")}
+                  </th>
+                  <th className="px-5 py-3 text-right font-medium">
+                    {t("assessments.col.score")}
+                  </th>
+                  <th className="px-5 py-3 text-right font-medium">
+                    {t("assessments.col.target")}
+                  </th>
                   <th className="px-5 py-3"></th>
                 </tr>
               </thead>
@@ -154,7 +155,8 @@ export function AssessmentsPage() {
                     <td className="px-5 py-3 text-ink-300">{a.scope}</td>
                     <td className="px-5 py-3 text-ink-300">{a.leadAssessor}</td>
                     <td className="px-5 py-3 text-[11px] text-ink-400">
-                      {formatDate(a.startedAt)} → {a.completedAt && formatDate(a.completedAt)}
+                      {formatDate(a.startedAt)} →{" "}
+                      {a.completedAt && formatDate(a.completedAt)}
                     </td>
                     <td className="px-5 py-3 text-right font-mono tabular-nums text-ink-100">
                       {a.overallScore.toFixed(2)}
@@ -167,7 +169,7 @@ export function AssessmentsPage() {
                         to={`/app/assessments/${a.id}`}
                         className="text-[11px] font-semibold text-brand-300 hover:text-brand-200"
                       >
-                        View
+                        {t("common.view")}
                       </Link>
                     </td>
                   </tr>

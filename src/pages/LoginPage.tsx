@@ -12,15 +12,17 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from "@/i18n/I18nProvider";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Fake auth: simulate a small delay and route to the app.
     setTimeout(() => navigate("/app"), 700);
   };
 
@@ -37,8 +39,11 @@ export function LoginPage() {
         <div className="absolute inset-0 grid-bg opacity-50" />
       </div>
 
+      <div className="absolute right-5 top-5 z-20">
+        <LanguageSwitcher />
+      </div>
+
       <div className="relative z-10 mx-auto grid min-h-screen max-w-7xl grid-cols-1 lg:grid-cols-2">
-        {/* Left — narrative panel */}
         <div className="hidden lg:flex flex-col justify-between p-12">
           <div className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-700 shadow-lg shadow-brand-900/40">
@@ -47,7 +52,7 @@ export function LoginPage() {
             <div className="leading-tight">
               <div className="text-lg font-bold tracking-tight">Maturix</div>
               <div className="text-[10px] uppercase tracking-[0.22em] text-ink-400">
-                NIST CSF 2.0 Maturity Platform
+                {t("login.subtitle.platform")}
               </div>
             </div>
           </div>
@@ -55,45 +60,40 @@ export function LoginPage() {
           <div className="space-y-8">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-brand-400/30 bg-brand-500/10 px-3 py-1 text-[11px] font-medium text-brand-200">
-                <Sparkles className="h-3.5 w-3.5" /> Built for CISO offices
+                <Sparkles className="h-3.5 w-3.5" /> {t("login.tagline")}
               </div>
               <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight text-white">
-                Measure, target and uplift your cybersecurity maturity.
+                {t("login.heroTitle")}
               </h1>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-300">
-                Maturix scores your organization against the NIST Cybersecurity
-                Framework 2.0 — 6 Functions, 22 Categories, 100+ outcomes — and
-                turns the gap into a prioritized, board-ready remediation plan.
+                {t("login.heroBody")}
               </p>
             </div>
 
             <ul className="space-y-3">
-              {[
-                "Quantitative maturity scoring across Govern, Identify, Protect, Detect, Respond, Recover.",
-                "Quarterly trending, target lines and ExCo-ready executive briefs.",
-                "Prioritized recommendations with effort, uplift and risk reduction.",
-              ].map((line) => (
-                <li key={line} className="flex items-start gap-3 text-sm text-ink-200">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>{line}</span>
-                </li>
-              ))}
+              {[t("login.bullet1"), t("login.bullet2"), t("login.bullet3")].map(
+                (line) => (
+                  <li
+                    key={line}
+                    className="flex items-start gap-3 text-sm text-ink-200"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-400 shrink-0" />
+                    <span>{line}</span>
+                  </li>
+                ),
+              )}
             </ul>
 
             <div className="grid grid-cols-3 gap-3">
-              <Stat icon={Activity} label="Outcomes scored" value="106" />
-              <Stat icon={Globe2} label="Frameworks" value="CSF 2.0" />
-              <Stat icon={Sparkles} label="AI insights" value="9 live" />
+              <Stat icon={Activity} label={t("login.stat.outcomes")} value="106" />
+              <Stat icon={Globe2} label={t("login.stat.frameworks")} value="CSF 2.0" />
+              <Stat icon={Sparkles} label={t("login.stat.ai")} value="9 live" />
             </div>
           </div>
 
-          <div className="text-xs text-ink-500">
-            © 2026 Maturix. NIST CSF is a publication of the U.S. National
-            Institute of Standards and Technology.
-          </div>
+          <div className="text-xs text-ink-500">{t("login.copyright")}</div>
         </div>
 
-        {/* Right — login card */}
         <div className="flex items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-md">
             <div className="rounded-3xl border border-white/10 bg-ink-900/70 p-8 shadow-2xl shadow-black/40 backdrop-blur-xl">
@@ -112,16 +112,14 @@ export function LoginPage() {
               </div>
 
               <h2 className="text-2xl font-bold tracking-tight text-white">
-                Welcome back
+                {t("login.welcome")}
               </h2>
-              <p className="mt-1.5 text-sm text-ink-400">
-                Sign in to continue to your maturity dashboard.
-              </p>
+              <p className="mt-1.5 text-sm text-ink-400">{t("login.subtitle")}</p>
 
               <form onSubmit={onSubmit} className="mt-7 space-y-4">
                 <div>
                   <label className="text-xs font-medium text-ink-300">
-                    Work email
+                    {t("login.email")}
                   </label>
                   <div className="relative mt-1.5">
                     <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-500" />
@@ -138,13 +136,13 @@ export function LoginPage() {
                 <div>
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-medium text-ink-300">
-                      Password
+                      {t("login.password")}
                     </label>
                     <a
                       href="#"
                       className="text-[11px] font-medium text-brand-300 hover:text-brand-200"
                     >
-                      Forgot?
+                      {t("login.forgot")}
                     </a>
                   </div>
                   <div className="relative mt-1.5">
@@ -165,7 +163,7 @@ export function LoginPage() {
                     defaultChecked
                     className="h-3.5 w-3.5 rounded border-white/20 bg-ink-950 text-brand-500 focus:ring-brand-400"
                   />
-                  Remember this device for 30 days
+                  {t("login.remember")}
                 </label>
 
                 <Button
@@ -174,33 +172,33 @@ export function LoginPage() {
                   className="w-full"
                   disabled={loading}
                 >
-                  {loading ? "Authenticating…" : "Sign in"}
+                  {loading ? t("login.submitting") : t("login.submit")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
 
                 <div className="relative py-2 text-center text-[10px] uppercase tracking-[0.18em] text-ink-500">
-                  <span className="bg-ink-900/0 px-2">or</span>
+                  <span className="bg-ink-900/0 px-2">{t("login.or")}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <Button type="button" variant="outline">
-                    SSO · SAML
+                    {t("login.sso")}
                   </Button>
                   <Button type="button" variant="outline">
-                    Microsoft Entra
+                    {t("login.entra")}
                   </Button>
                 </div>
               </form>
             </div>
 
             <p className="mt-5 text-center text-[11px] text-ink-500">
-              By signing in you agree to the{" "}
+              {t("login.tos.prefix")}{" "}
               <a className="text-ink-300 underline-offset-2 hover:underline">
-                Terms
+                {t("login.tos.terms")}
               </a>{" "}
-              and{" "}
+              {t("login.tos.and")}{" "}
               <a className="text-ink-300 underline-offset-2 hover:underline">
-                Privacy Policy
+                {t("login.tos.privacy")}
               </a>
               .
             </p>
