@@ -49,7 +49,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       let value = dict[key] ?? translations.en[key] ?? key;
       if (vars) {
         for (const [k, v] of Object.entries(vars)) {
-          value = value.replaceAll(`{${k}}`, String(v));
+          value = value.split(`{${k}}`).join(String(v));
         }
       }
       return value;
