@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------------------
+# Maturix — local development stack (prototype, frontend only)
+# ---------------------------------------------------------------------------
+# Services:
+#   - frontend   Vite dev server for the React UI (mock data only)
+# ---------------------------------------------------------------------------
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: maturix-frontend
+    restart: unless-stopped
+    ports:
+      - "5180:5180"
+    volumes:
+      - ./src:/app/src
+      - ./index.html:/app/index.html
+      - ./tailwind.config.js:/app/tailwind.config.js
+      - ./postcss.config.js:/app/postcss.config.js
+      - ./vite.config.ts:/app/vite.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.node.json:/app/tsconfig.node.json
+      - ./public:/app/public
+    environment:
+      - CHOKIDAR_USEPOLLING=true
